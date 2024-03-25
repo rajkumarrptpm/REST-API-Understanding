@@ -1,8 +1,97 @@
-from rest_framework import status
+from django.shortcuts import get_object_or_404
+from rest_framework import status, mixins, generics,viewsets
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from .serializers import *
 from watchlist_app.models import *
+
+
+# Modelviewset
+
+"""class StreamPlatformVS(viewsets.ModelViewSet):
+    queryset = StreamPlatform.objects.all()
+    serializer_class = StreamPlatformSerializer
+"""
+
+# ReadOnlyModelViewSet
+"""class StreamPlatformVS(viewsets.ReadOnlyModelViewSet):
+    queryset = StreamPlatform.objects.all()
+    serializer_class = StreamPlatformSerializer
+"""
+# class for stream platform using viewsets
+class StreamPlatformVS(viewsets.ViewSet):
+
+    def list(self,request):
+        queryset = StreamPlatform.objects.all()
+        serializer = StreamPlatformSerializer(queryset,many=True)
+        return Response(serializer.data)
+
+    def retrieve(self,request,pk):
+        queryset = StreamPlatform.objects.all()
+        watchlist = get_object_or_404(queryset,pk=pk)
+        serializer = StreamPlatformSerializer(watchlist)
+        return Response(serializer.data)
+
+    def create(self,request):
+        serializer = StreamPlatformSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
+    def destroy(self,request,pk):
+        platform = StreamPlatform.objects.get(pk=pk)
+        platform.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+
+class ReviewCreate(generics.CreateAPIView):
+
+    serializer_class = ReviewSerializer
+
+    def perform_create(self, serializer):
+        pk = self.kwargs.get('pk')
+        movie = Watchlist.objects.get(pk=pk)
+        serializer.save(watchlist=movie)
+
+class ReviewList(generics.ListAPIView):
+    # queryset = Review.objects.all()# if using this print all the reviews from the review model,instead create a function for queryset and specify the pk
+    serializer_class = ReviewSerializer
+
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Review.objects.filter(watchlist = pk)
+
+class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Review.objects.all
+    serializer_class = ReviewSerializer
+
+
+
+
+
+# class ReviewDetail(mixins.RetrieveModelMixin,generics.GenericAPIView,mixins.UpdateModelMixin):
+#     queryset = Review.objects.all()
+#     serializer_class = ReviewSerializer
+#
+#     def get(self, request, *args, **kwargs):
+#         return self.retrieve(request, *args, **kwargs)
+#
+#     def post(self, request, *args, **kwargs):
+#         return self.update(request, *args, **kwargs)
+#
+# class ReviewList(mixins.ListModelMixin,mixins.CreateModelMixin,generics.GenericAPIView):
+#     queryset = Review.objects.all()
+#     serializer_class = ReviewSerializer
+#
+#     def get(self, request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
+#
+#     def post(self, request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
+#
+
 
 #views for streaming platform
 class StreamPlatformAV(APIView):

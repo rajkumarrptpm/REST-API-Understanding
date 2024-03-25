@@ -3,21 +3,27 @@ from watchlist_app.models import *
 
 
 
+class ReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Review
+        fields = "__all__"
+
 
 class WatchListSerializer(serializers.ModelSerializer):
     # len_name = serializers.SerializerMethodField()
+    reviews = ReviewSerializer(many=True,read_only="True")
     class Meta:
         model = Watchlist
         fields = "__all__"
         # exclude =['active']
         # fields = ['name','description','active']
 
-# class StreamPlatformSerializer(serializers.ModelSerializer):
-class StreamPlatformSerializer(serializers.HyperlinkedModelSerializer):
+class StreamPlatformSerializer(serializers.ModelSerializer):
+# class StreamPlatformSerializer(serializers.HyperlinkedModelSerializer):
 
     # ------------
     # nested serializer
-    # watchlist = WatchListSerializer(many=True,read_only=True)# one streaming platform can have many movies
+    watchlist = WatchListSerializer(many=True,read_only=True)# one streaming platform can have many movies
     # ----------
 
     # ------------
@@ -27,7 +33,7 @@ class StreamPlatformSerializer(serializers.HyperlinkedModelSerializer):
 
     # ------------
     # primary key of items in serializer
-    watchlist = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name="movie-details")  # one streaming platform can have many movies
+    # watchlist = serializers.HyperlinkedRelatedField(many=True,read_only=True,view_name="movie-details")  # one streaming platform can have many movies
 
     # ----------
 
