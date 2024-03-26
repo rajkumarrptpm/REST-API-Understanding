@@ -59,12 +59,28 @@ class ReviewCreate(generics.CreateAPIView):
         pk = self.kwargs.get('pk')
         movie = Watchlist.objects.get(pk=pk)
 
+
         # <--------------------------------------------------------------------------------->
         # check to the user is already reviewed or not
         review_user = self.request.user
         review_queryset = Review.objects.filter(watchlist=movie,review_user=review_user)
         if review_queryset.exists():
             raise ValidationError("You have already reviewed this movie!")
+        # <--------------------------------------------------------------------------------->
+
+
+
+
+        # <--------------------------------------------------------------------------------->
+        # review Rating and Rating count
+
+        if movie.number_rating == 0:
+            movie.avg_rating = serializer.validated_data['rating']
+
+        else:
+            movie.avg_rating = (movie.avg_rating+serializer.validated_data['rating'])/2
+        movie.number_rating=movie.number_rating+1
+        movie.save()
         # <--------------------------------------------------------------------------------->
 
         serializer.save(watchlist=movie,review_user=review_user)

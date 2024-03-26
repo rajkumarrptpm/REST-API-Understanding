@@ -21,6 +21,8 @@ class Watchlist(models.Model):
     description = models.CharField(max_length=100)
     active = models.BooleanField(default=True)
     platform = models.ForeignKey(StreamPlatform,on_delete=models.CASCADE,related_name="watchlist")# here this code is connecting in serializer inside another serializer
+    avg_rating = models.FloatField(default=0)
+    number_rating = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
 
 
@@ -36,6 +38,7 @@ class Review(models.Model):
     watchlist = models.ForeignKey(Watchlist,on_delete=models.CASCADE,related_name="reviews")
     active = models.BooleanField(default=True )
     created = models.DateTimeField(auto_now_add=True)
+
     update = models.DateTimeField(auto_now=True)
 
     def __str__(self):
