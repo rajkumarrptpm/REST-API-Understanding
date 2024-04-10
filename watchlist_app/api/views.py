@@ -4,9 +4,11 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.throttling import *
 from .serializers import *
 from watchlist_app.models import *
 from .permissions import *
+from.throttling import *
 
 
 # Modelviewset
@@ -23,6 +25,7 @@ from .permissions import *
 """
 # class for stream platform using viewsets
 class StreamPlatformVS(viewsets.ViewSet):
+    permission_classes = [IsAdminOrReadOnly]
 
     def list(self,request):
         queryset = StreamPlatform.objects.all()
@@ -52,6 +55,8 @@ class StreamPlatformVS(viewsets.ViewSet):
 class ReviewCreate(generics.CreateAPIView):
 
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [ReviewCreateThrottle]
 
     def get_queryset(self):
         return Review.objects.all()
@@ -88,7 +93,8 @@ class ReviewCreate(generics.CreateAPIView):
 class ReviewList(generics.ListAPIView):
     # queryset = Review.objects.all()# if using this print all the reviews from the review model,instead create a function for queryset and specify the pk
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+    throttle_classes = [ReviewListThrottle, AnonRateThrottle]
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -97,8 +103,9 @@ class ReviewList(generics.ListAPIView):
 class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [ReviewUserOrReadOnly]# ReviewUserOrReadOnly is get from the permission class it checks the review owner
-
+    permission_classes = [IsReviewUserOrReadOnly]# ReviewUserOrReadOnly is get from the permission class it checks the review owner
+    throttle_classes = [ScopedRateThrottle]
+    throttle_scope = 'review-detail'
 
 
 
@@ -127,6 +134,7 @@ class ReviewDetail(generics.RetrieveUpdateDestroyAPIView):
 
 #views for streaming platform
 class StreamPlatformAV(APIView):
+    permission_classes = [IsAdminOrReadOnly]
 
     def get(self,request):
         platform = StreamPlatform.objects.all()
@@ -142,6 +150,7 @@ class StreamPlatformAV(APIView):
             return Response(serializer.errors)
 
 class StreamDetailsAV(APIView):
+    permission_classes = [IsAdminOrReadOnly]
 
     def get(self,request,pk):
         try :
@@ -170,6 +179,7 @@ class StreamDetailsAV(APIView):
 
 # views for watchlist
 class WatchListAV(APIView):
+    permission_classes = [IsAdminOrReadOnly]
 
     def get(self,request):
         movies = Watchlist.objects.all()
@@ -185,7 +195,12 @@ class WatchListAV(APIView):
         else:
             return Response(serializer.errors)
 
+
+
+
+
 class WatchListDetailsAV(APIView):
+    permission_classes = [IsAdminOrReadOnly]
 
     def get(self,request,pk):
         try:

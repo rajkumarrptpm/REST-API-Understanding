@@ -137,5 +137,19 @@ REST_FRAMEWORK = {
 
     'DEFAULT_AUTHENTICATION_CLASSES':[
         'rest_framework.authentication.TokenAuthentication',
-    ]
+    ],
+    # Throttle starts
+    # 'DEFAULT_THROTTLE_CLASSES':[
+    #     'rest_framework.throttling.AnonRateThrottle',
+    #     'rest_framework.throttling.UserRateThrottle'
+    # ],
+#     if the custom throttle is using then do not pass throttle here
+    'DEFAULT_THROTTLE_RATES':{
+        'anon': "5/day",
+        'user': "10/day",
+        'review-create': "1/day",
+        'review-list': "10/day",
+        'review-detail': '5/day',
+    }
+
 }
