@@ -11,6 +11,7 @@ from .permissions import *
 from.throttling import *
 
 
+
 # Modelviewset
 
 """class StreamPlatformVS(viewsets.ModelViewSet):
@@ -225,3 +226,16 @@ class WatchListDetailsAV(APIView):
         movie = Watchlist.objects.get(pk=pk)
         movie.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class UserReview(generics.ListAPIView):
+    serializer_class = ReviewSerializer
+
+    # def get_queryset(self):
+    #     username = self.kwargs['username']
+    #     return Review.objects.filter(review_user__username=username)
+
+    def get_queryset(self):
+        username = self.request.query_params.get('username', None)
+        return Review.objects.filter(review_user__username=username)
+

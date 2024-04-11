@@ -22,5 +22,6 @@ urlpatterns=[
     #review
     path('stream/movie/<int:pk>/review-create/', ReviewCreate.as_view(), name='review-create'),
     path('stream/movie/<int:pk>/reviews/',ReviewList.as_view(),name='review-list'),
-    path('stream/reviews/<int:pk>',ReviewDetail.as_view(),name='review-Detail'),
+    path('stream/review/<int:pk>/',ReviewDetail.as_view(),name='review-Detail'),
+    path('reviews/',UserReview.as_view(),name='user-review-Detail'),
 ]
