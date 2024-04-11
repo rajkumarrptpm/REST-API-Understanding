@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'watchlist_app',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -145,7 +146,7 @@ REST_FRAMEWORK = {
     # ],
 #     if the custom throttle is using then do not pass throttle here
     'DEFAULT_THROTTLE_RATES':{
-        'anon': "5/day",
+        'anon': "10/day",
         'user': "10/day",
         'review-create': "1/day",
         'review-list': "10/day",

@@ -11,6 +11,7 @@ urlpatterns=[
     #watchlist
     path('list/',WatchListAV.as_view(),name="movie-list"),
     path('<int:pk>/',WatchListDetailsAV.as_view(),name="movie-details"),
+    path('list2/',WatchList.as_view(),name="watch-list"),
 
     #streamplatform
     # path('stream/',StreamPlatformAV.as_view(),name="stream"),

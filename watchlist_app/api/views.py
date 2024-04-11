@@ -4,11 +4,14 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.throttling import *
+from rest_framework import filters
 from .serializers import *
 from watchlist_app.models import *
 from .permissions import *
 from.throttling import *
+
 
 
 
@@ -96,6 +99,8 @@ class ReviewList(generics.ListAPIView):
     serializer_class = ReviewSerializer
     # permission_classes = [IsAuthenticated]
     throttle_classes = [ReviewListThrottle, AnonRateThrottle]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['review_user__username','active']
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -177,6 +182,32 @@ class StreamDetailsAV(APIView):
         platform =StreamPlatform.objects.get(pk=pk)
         platform.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class WatchList(generics.ListAPIView):
+    queryset = Watchlist.objects.all()# if using this print all the reviews from the review model,instead create a function for queryset and specify the pk
+    serializer_class = WatchListSerializer
+    # permission_classes = [IsAuthenticated]
+
+    # filtering
+    # filter_backends = [DjangoFilterBackend]
+    # filterset_fields = ['title','platform__name']
+
+    # searching
+    # filter_backends = [filters.SearchFilter]
+    # search_fields = ['title','=platform__name']# '=' is used here to use exact value the user search,if using ^ this symbol the user get first items starts with that he searches
+
+    # Ordering
+    # filter_backends = [filters.OrderingFilter]
+    # ordering_fields = ['avg_rating']
+
+
+    # combining filtering,searchin.ordering
+    filter_backends = [filters.SearchFilter,DjangoFilterBackend,filters.OrderingFilter]
+    filterset_fields = ['title','platform__name']
+    search_fields = ['title','platform__name']
+    ordering_fields = ['avg_rating']
+
 
 # views for watchlist
 class WatchListAV(APIView):
