@@ -11,6 +11,7 @@ from .serializers import *
 from watchlist_app.models import *
 from .permissions import *
 from.throttling import *
+from .pagination import *
 
 
 
@@ -184,9 +185,11 @@ class StreamDetailsAV(APIView):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class WatchList(generics.ListAPIView):
+class WatchListGV(generics.ListAPIView):
     queryset = Watchlist.objects.all()# if using this print all the reviews from the review model,instead create a function for queryset and specify the pk
     serializer_class = WatchListSerializer
+    # pagination_class = WatchlistPagination
+    pagination_class = WatchlistLOPagination
     # permission_classes = [IsAuthenticated]
 
     # filtering

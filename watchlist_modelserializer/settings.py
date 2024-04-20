@@ -151,6 +151,14 @@ REST_FRAMEWORK = {
         'review-create': "1/day",
         'review-list': "10/day",
         'review-detail': '5/day',
-    }
+    },
+
+    #offsetpagination
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # 'PAGE_SIZE': 3,
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+
 
 }
