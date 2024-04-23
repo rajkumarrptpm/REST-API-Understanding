@@ -23,7 +23,7 @@ class Registration(APIView):
         else:
             data = serializer.errors
 
-        return Response(data)
+        return Response(data,status=status.HTTP_201_CREATED)
 
 class Logout(APIView):
     def post(self,request):
